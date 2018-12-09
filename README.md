@@ -1,4 +1,4 @@
-# Source code for our paper Integrating Trickle Timing in Software Defined WSNs for Energy Efficiency
+# Source code for our paper: "Integrating Trickle Timing in Software Defined WSNs for Energy Efficiency"
 
 https://ieeexplore.ieee.org/document/8465747
 
