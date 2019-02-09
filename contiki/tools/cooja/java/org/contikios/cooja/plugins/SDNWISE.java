@@ -43,7 +43,7 @@ public class SDNWISE extends VisPlugin{
     private int inBytes = 0, outBytes = 0;
     JScrollPane scrollPane;
 
-    String jarPath = "/tools/sdnwise-controller/build/sdnwise-controller.jar";
+    String jarPath = "/tools/sdnwise-controller/build/jar/sdnwise-controller.jar";
 
     public SDNWISE(Simulation simulation, Cooja gui) {
         super("SDNWISE", gui);

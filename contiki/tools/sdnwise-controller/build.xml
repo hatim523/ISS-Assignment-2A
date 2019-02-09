@@ -8,9 +8,9 @@
     <property name="archieve" value="sdnwise-controller.jar"/>
 
     <path id="classpath">
-        <fileset dir="lib" includes="**/*.jar"/>
-        <fileset dir="../collect-view/dist/lib" includes="**/*.jar"/>
         <fileset dir="../collect-view/dist" includes="**/*.jar"/>
+        <fileset dir="../collect-view/build" includes="**/*"/>
+        <fileset dir="lib" includes="**/*.jar"/>
     </path>
 
     <manifestclasspath property="jar.classpath" jarfile="${archieve}">
@@ -22,8 +22,8 @@
     </target>
 
     <target name="compile">
-        <mkdir dir="${build}"/>
-        <javac srcdir="${src}" destdir="${build}" classpathref="classpath"
+        <mkdir dir="${build}/classes"/>
+        <javac srcdir="${src}" destdir="${build}/classes" classpathref="classpath"
                debug="true" includeantruntime="false"/>
     </target>
 
@@ -33,7 +33,7 @@
             <fileset dir="lib"/>
             <file file="../collect-view/dist/collect-view.jar"/>
         </copy>
-        <jar destfile="${build}/${archieve}" basedir="${build}">
+        <jar destfile="${build}/jar/sdnwise-controller.jar" basedir="${build}/classes">
             <manifest>
                 <attribute name="Main-Class" value="${main}"/>
                 <attribute name="Class-Path" value="${jar.classpath}"/>
@@ -42,8 +42,9 @@
     </target>
 
     <target name="run" depends="jar">
-        <java fork="yes" dir="build/jar" jar="${build}/${archieve}">
-            <arg value=""/>
+        <java fork="yes" dir="build/jar" jar="${build}/jar/sdnwise-controller.jar"
+        classpathref="classpath">
+            <arg line=""/>
         </java>
     </target>
 
