@@ -1,6 +1,5 @@
 # Source code for our paper: "Integrating Trickle Timing in Software Defined WSNs for Energy Efficiency"
 
-https://ieeexplore.ieee.org/document/8465747
 
 @INPROCEEDINGS{8465747, 
 
@@ -8,7 +7,7 @@ author={N. Q. Hieu and N. Huu Thanh and T. T. Huong and N. Quynh Thu and H. V. Q
 
 booktitle={2018 IEEE Seventh International Conference on Communications and Electronics (ICCE)}, 
 
-title={Integrating Trickle Timing in Software Defined WSNs for Energy Efficiency}, 
+title={[Integrating Trickle Timing in Software Defined WSNs for Energy Efficiency](https://ieeexplore.ieee.org/document/8465747)}, 
 
 year={2018}, 
 
