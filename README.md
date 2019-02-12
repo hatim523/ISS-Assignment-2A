@@ -27,6 +27,6 @@ ISSN={},
 month={July},}
 
 
-## SDN-WISE Controller directory: contiki/tools/sdnwise-controller
+## SDN-WISE Controller directory: [contiki/tools/sdnwise-controller](https://github.com/hieu1204/sdn-wise-trickle/tree/master/contiki/tools/sdnwise-controller)
 
-## Node directory: sdn-wise-contiki with some added functions
+## Node directory: [node](https://github.com/hieu1204/sdn-wise-trickle/tree/master/node) with some added functions
