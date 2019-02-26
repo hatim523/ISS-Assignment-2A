@@ -29,3 +29,5 @@ month={July},}
 ## SDN-WISE Controller directory: [contiki/tools/sdnwise-controller](https://github.com/hieu1204/sdn-wise-trickle/tree/master/contiki/tools/sdnwise-controller)
 
 ## Node directory: [node](https://github.com/hieu1204/sdn-wise-trickle/tree/master/node) with some added functions
+
+## [Get started](https://github.com/hieunq95/sdn-wise-trickle/wiki/Get-started)
