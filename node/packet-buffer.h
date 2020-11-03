@@ -54,7 +54,8 @@
     RESPONSE,
     OPEN_PATH,
     CONFIG,
-    REG_PROXY
+    REG_PROXY,
+    K173626,
   } packet_type_t;
 
   typedef struct __attribute__((__packed__)) packet_info {

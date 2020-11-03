@@ -48,7 +48,7 @@
 
 /*----------------------------------------------------------------------------*/
 // TODO increase buffer size -> better performance ?
-  MEMB(packets_memb, packet_t, 4); /*original value = 4*/
+  MEMB(packets_memb, packet_t, 8); /*original value = 4*/
 /*----------------------------------------------------------------------------*/
   static packet_t * packet_allocate(void);
 /*----------------------------------------------------------------------------*/

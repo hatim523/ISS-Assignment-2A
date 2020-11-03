@@ -253,6 +253,27 @@ public class Controller implements Observer, SerialConnectionListener {
                             System.out.println("Resonpse packet Destination: " + responseDst);
                             sendToNode(graph.getOpenPath(responseDst));
                         }
+                        
+                        // DEFINING ACTION FOR CUSTOM PACKET TYPE
+                        if (type.equals("8")) {
+                        	String beacon_count, report_count;
+                        	
+                        	String[] mote_out = inComingData.split(": ");
+                        	String[] data = mote_out[1].split(" ");
+                        	
+//                        	System.out.println(data);
+                        	beacon_count = data[7];
+                        	report_count = data[8];
+                        	
+                        	System.out.println("[K173626]: BEACON COUNT: " + beacon_count + "\t"
+                        			+ "REPORT COUNT: " + report_count);
+                        	
+                        	preData = inComingData;
+                        	setChanged();
+                        	notifyObservers(inComingData);
+                        	
+                        }
+                        
                     }
                     previousData = inComingData;
                 }

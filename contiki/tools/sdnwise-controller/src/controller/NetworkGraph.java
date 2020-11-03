@@ -55,9 +55,12 @@ public class NetworkGraph {
         String HOPS = packet[7];
         LinkedList<String> NEIGHBORS = new LinkedList<>();
 
-        // current sender's neighbors and RSSI
-        for (int i = 1; i <= Integer.parseInt(packet[9]); i++) {
-            NEIGHBORS.add(packet[9+3*i-2] + "." + packet[9+3*i-1] + "\t" + packet[9+3*i]);
+        // since custom packet (K173626 Type:8) does not contain neighbour information
+        if (!packet[4].equals("8")) {
+        	// current sender's neighbors and RSSI
+            for (int i = 1; i <= Integer.parseInt(packet[9]); i++) {
+                NEIGHBORS.add(packet[9+3*i-2] + "." + packet[9+3*i-1] + "\t" + packet[9+3*i]);
+            }
         }
 
         // add sink and sender

@@ -74,7 +74,10 @@
 #define RF_SEND_DATA_EVENT    58
 #define NEW_PACKET_EVENT      59
 #define ACTIVATE_EVENT        60
+// DEFINING CUSTOM PACKET (k173626) EVENT
+#define RF_SEND_K173626_EVENT 61
 
+int beacon_count = 0;
 
 #ifndef SDN_WISE_DEBUG
 #define SDN_WISE_DEBUG 0
@@ -108,6 +111,7 @@ static struct ctimer back_off_timer;
   PROCESS(beacon_timer_proc, "Beacon Timer Process");
   PROCESS(report_timer_proc, "Report Timer Process");
   PROCESS(data_timer_proc, "Data Timer Process");
+  PROCESS(K173626_timer_proc, "K173626 Timer Process");
 #if TRICKLE_ON
 AUTOSTART_PROCESSES(
         &main_proc,
@@ -134,6 +138,7 @@ AUTOSTART_PROCESSES(
     &timer_proc,
     &beacon_timer_proc,
     &report_timer_proc,
+    &K173626_timer_proc,
 #if SINK
     &adapter_proc,
 #endif
@@ -287,6 +292,7 @@ AUTOSTART_PROCESSES(
           conf.is_active = 1;
           process_post(&beacon_timer_proc, ACTIVATE_EVENT, (process_data_t)NULL);
           process_post(&report_timer_proc, ACTIVATE_EVENT, (process_data_t)NULL);
+          process_post(&K173626_timer_proc, ACTIVATE_EVENT, (process_data_t)NULL);
           /*process_post ACTIVATE_EVENT to trickle_hanlder process*/
           packet_t* p = (packet_t*) data;
           process_post(&trickle_handler, ACTIVATE_EVENT,(process_data_t)p);
@@ -297,6 +303,7 @@ AUTOSTART_PROCESSES(
 
         case RF_SEND_BEACON_EVENT:
         rf_broadcast_send(create_beacon());
+        beacon_count++;
         break;
 
         case RF_SEND_REPORT_EVENT:
@@ -306,6 +313,20 @@ AUTOSTART_PROCESSES(
                   conf.distance_from_sink = _MAX_DISTANCE;
                   conf.reset_period = _RESET_PERIOD;
                 } else {
+                  conf.reset_period--;
+                }
+        #endif
+        break;
+
+        // CUSTOM PACKET REPORT EVENT
+        case RF_SEND_K173626_EVENT:
+        rf_unicast_send(create_K173626(beacon_count));
+        #if !SINK
+                if (conf.reset_period == 0) {
+                  conf.distance_from_sink = _MAX_DISTANCE;
+                  conf.reset_period = _RESET_PERIOD;
+                }
+                else {
                   conf.reset_period--;
                 }
         #endif
@@ -477,3 +498,23 @@ PROCESS_THREAD(beacon_timer_proc, ev, data) {
     PROCESS_END();
   }
 /*----------------------------------------------------------------------------*/
+/* ################# CUSTOM PACKET PROCESS (K173626) ######################## */
+
+PROCESS_THREAD(K173626_timer_proc, ev, data) {
+  static struct etimer et;
+
+  PROCESS_BEGIN();
+  while (1) {
+
+    #if !SINK
+      if (!conf.is_active) {
+        PROCESS_WAIT_EVENT_UNTIL(ev == ACTIVATE_EVENT);
+      }
+    #endif
+
+    etimer_set(&et, conf.K173626_period * CLOCK_SECOND);
+    PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
+    process_post(&main_proc, RF_SEND_K173626_EVENT, (process_data_t)NULL);
+  }
+  PROCESS_END();
+}

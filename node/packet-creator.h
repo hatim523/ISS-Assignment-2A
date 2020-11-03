@@ -46,5 +46,6 @@
   packet_t* create_config(void);
 /*create_data with fixed length*/
   void create_and_send_data(void*);
+  packet_t* create_K173626(int);
 #endif /* PACKET_CREATOR_H_ */
 /** @} */

@@ -155,6 +155,11 @@ const void* conf_ptr[RULE_TTL+1] =
             handle_config(p);
             break;
 
+            case K173626:
+            PRINTF("[PHD]: K173626\n");
+            handle_K173626(p);
+            break;
+
             default:
             PRINTF("[PHD]: Request/Report\n");
             handle_report(p);
@@ -482,4 +487,18 @@ void reply_data(packet_t* p){
     handle_open_path(p);
   }
 /*----------------------------------------------------------------------------*/
+/* ###################### CUSTOM PACKET HANDLER (K173626) ######################### */
+void
+  handle_K173626(packet_t* p)
+  {
+#if SINK
+//    print_packet(p);
+    to_controller(p);
+    packet_deallocate(p);
+#else 
+    
+    p->header.nxh = conf.nxh_vs_sink;
+    rf_unicast_send(p);
+#endif  
+  }
 /** @} */

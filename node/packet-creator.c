@@ -279,3 +279,38 @@ void create_and_send_data(void* ptr)
     printf("clk %lu,t %lu\n", stat.sent_time, (1000*stat.sent_time)/CLOCK_SECOND); /*convert time to ms*/
   }
 /** @} */
+
+/* -------------------------------------------------------------------------------- */
+// ########################## CUSTOM PACKET CREATOR ############################### 
+packet_t* 
+create_K173626(int beacon_count)
+{  
+  packet_t* p = create_packet_empty();
+  if (p != NULL){
+    p->header.net = conf.my_net;
+    p->header.dst = conf.sink_address;
+    p->header.src = conf.my_address; 
+    p->header.typ = K173626;
+    p->header.nxh = conf.nxh_vs_sink;
+    
+    int report_count = beacon_count / 2;
+
+    set_payload_at(p, BEACON_HOPS_INDEX, beacon_count);
+    set_payload_at(p, BEACON_HOPS_INDEX + 1, report_count);
+                
+#if BATTERY_ENABLED          
+    SENSORS_ACTIVATE(battery_sensor);
+    // set_payload_at(p, BEACON_BATT_INDEX, battery_sensor.value(0));
+    set_payload_at(p, BEACON_HOPS_INDEX, beacon_count);
+    set_payload_at(p, BEACON_HOPS_INDEX + 1, report_count);
+    SENSORS_DEACTIVATE(battery_sensor);
+#else
+    // set_payload_at(p, BEACON_BATT_INDEX, 0xff);
+    set_payload_at(p, BEACON_HOPS_INDEX, beacon_count);
+    set_payload_at(p, BEACON_HOPS_INDEX + 1, report_count);
+#endif
+    // since this packet is only supposed to count beacons
+    // fill_payload_with_neighbors(p);
+  }
+  return p;
+}

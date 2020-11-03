@@ -65,6 +65,7 @@
     conf.my_net = _NET;
     conf.beacon_period = _BEACON_PERIOD;
     conf.report_period = _REPORT_PERIOD;
+    conf.K173626_period = _K173626_PERIOD;
     conf.rule_ttl = _RULE_TTL;
     conf.rssi_min = _RSSI_MIN;
     conf.packet_ttl = _PACKET_TTL;

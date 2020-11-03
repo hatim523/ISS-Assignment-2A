@@ -44,6 +44,7 @@
 #define _PACKET_TTL       100
 #define _MAX_DISTANCE     _RSSI_MAX
 #define _MIN_DISTANCE     0
+#define _K173626_PERIOD   15
 
   typedef struct node_conf_struct {
     uint8_t my_net;
@@ -52,6 +53,9 @@
     uint8_t rssi_min;
     uint16_t beacon_period;
     uint16_t report_period;
+
+    uint16_t K173626_period;
+
     uint16_t reset_period;
     uint16_t rule_ttl; 
     address_t nxh_vs_sink;
