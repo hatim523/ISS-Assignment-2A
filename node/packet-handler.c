@@ -70,7 +70,8 @@ typedef enum conf_id{
   GET_RULE,
   ADD_FUNCTION,
   REM_FUNCTION,
-  GET_FUNCTION
+  GET_FUNCTION,
+  GET_NEIGHBOURS,
 } conf_id_t;
 
 const uint8_t conf_size[RULE_TTL+1] = 
@@ -129,6 +130,7 @@ const void* conf_ptr[RULE_TTL+1] =
   handle_packet(packet_t* p)
   {
     if (p->info.rssi >= conf.rssi_min && p->header.net == conf.my_net){
+
       if (p->header.typ == BEACON){
         PRINTF("[PHD]: Beacon\n");
         handle_beacon(p);
@@ -365,21 +367,40 @@ const void* conf_ptr[RULE_TTL+1] =
   void
   handle_config(packet_t* p)
   {
+
+    PRINTF("\nSOURCE ADDRESS: ");
+    print_address(&(p->header.src));
+    PRINTF("\nDESTINATION ADDRESS: ");
+    print_address(&(p->header.dst));
+    PRINTF("\nPRINTING PAYLOAD AT INDEX 12: %d", get_payload_at(p, 12));
+    // print_node_conf();
+
+    PRINTF("....PRINTING CONFIG PACKET..........");
+    print_packet(p);
     if (is_my_address(&(p->header.dst)))
     {    
+      PRINTF("ADDRESS MATCHED");
 #if SINK
       if (!is_my_address(&(p->header.src))){
+        PRINTF("SINK NOT AS SOURCE");
         print_packet_uart(p);
       } else {
 #endif
       uint8_t i = 0;
       uint8_t id = p->payload[i] & 127;
+      printf("i: %d\n", i);
+      printf("ID %d\n:",  id);
       if ((p->payload[i] & 128) == CNF_READ)
       {
         //READ
         switch (id)
         {
           // TODO
+          case GET_NEIGHBOURS:
+            printf("################## PRINTING CUSTOM CONFIG PACKET: ############");
+            print_packet(p);
+            break;
+
           case RESET:
           case GET_ALIAS:
           case GET_FUNCTION:
@@ -406,6 +427,8 @@ const void* conf_ptr[RULE_TTL+1] =
           }
 	  p->header.len += conf_size[id];
           break;
+
+
 
 
           default:
@@ -451,6 +474,8 @@ const void* conf_ptr[RULE_TTL+1] =
           }
           break;
 
+          
+
           default:
           break;
         }
@@ -461,6 +486,7 @@ const void* conf_ptr[RULE_TTL+1] =
 #endif      
     }
     else {
+      printf("FORWARDING PACKET FOR MATCHING");
       match_packet(p);
     }   
   }

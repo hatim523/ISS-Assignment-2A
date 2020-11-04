@@ -16,7 +16,7 @@ void to_controller(packet_t* p){
      * Sink -> Controller: 1 16 0.1 0.3 2 98 0.1 2 255 1 0 2 83
      * */
     int i;
-    printf("Sink(Jadu2) -> Controller: ");
+    printf("Sink -> Controller: ");
     printf("%d %d %d.%d %d.%d %d %d %d.%d ",
            p->header.net, p->header.len, p->header.dst.u8[0], p->header.dst.u8[1],
            p->header.src.u8[0], p->header.src.u8[1], (uint8_t)p->header.typ, p->header.ttl,
@@ -51,6 +51,12 @@ PROCESS_THREAD(adapter_proc, ev, data){
                     printf("%d ", packet_array[i]);
                 }
                 printf("\n");
+                
+                // printf("PRINTING PACKET: ");
+                // print_packet(p);
+                // printf("HEADER: %d", p->header);
+                // printf("\nTYPE: %d", p->header.typ);
+                // printf("\nSRC: %d\n", p->header.src);
                 p->info.rssi = 0;
                 handle_packet(p);
             }

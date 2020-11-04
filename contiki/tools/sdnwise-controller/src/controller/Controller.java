@@ -4,11 +4,15 @@ import connection.SerialConsole;
 import org.contikios.contiki.collect.MoteFinder;
 import org.contikios.contiki.collect.SerialConnection;
 import org.contikios.contiki.collect.SerialConnectionListener;
+import org.graphstream.graph.Node;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -38,7 +42,49 @@ public class Controller implements Observer, SerialConnectionListener {
 
         graph = new NetworkGraph();
     }
+    
+    public char[] createConfigPacket(String dest, ArrayList<String> neigbours) {
+    	ArrayList<String> packetString = new ArrayList<>();
+    	
+    	int packet_size = 11 + neigbours.size() * 2;
+    	
+    	packetString.add("1");	//id
+    	packetString.add(Integer.toString(packet_size));	//length
+    	
+//    	packetString.add("0.1");
+//    	packetString.add(dest);
+    	packetString.add(dest.split("\\.")[0]);	//dest
+    	packetString.add(dest.split("\\.")[1]);	//dest
+    	packetString.add("0");	//src
+    	packetString.add("1");	//src
+    	packetString.add("6");	//type
+    	packetString.add("90");	//ttl
+//    	packetString.add("0.1");
+    	packetString.add("0");	//nxhop
+    	packetString.add("1");	//nxhop
+        packetString.add("18");   //config id
 
+        // now adding neighbours
+        for (int i=0; i<neigbours.size(); i++) {
+//        	packetString.add(neigbours.get(i));
+        	packetString.add(neigbours.get(i).split("\\.")[0]);
+        	packetString.add(neigbours.get(i).split("\\.")[1]);
+        }
+        
+        // converting array list to char[]
+        char[] configPacket = new char[packet_size];
+        for (int i = 0; i < packet_size; i++) {
+            configPacket[i] = (char) (Integer.parseInt(packetString.get(i)) + 32);
+            //openPath[i] = (char) (Integer.parseInt(packetString.get(i)));
+        }
+//        String s = packetString.toString().replaceAll(",", "");
+//        System.out.println(s);
+//        char[] configPacket = s.substring(1, s.length()-1).toCharArray();
+    	
+        System.out.println(configPacket);
+    	return configPacket;
+    }
+    
     private void startThreads() {
         Thread th = new Thread(new Listener(this));
         th.start();
@@ -73,15 +119,48 @@ public class Controller implements Observer, SerialConnectionListener {
                 * e.g size=4 */
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     String inputTxt = textField.getText();
-                    if (inputTxt.contains("size")){
+                    inputTxt = inputTxt.toLowerCase();
+                    System.out.println(inputTxt);
+                    if (inputTxt.contains("size"))
+                    {
                         String size = inputTxt.substring(inputTxt.indexOf("=")+1, inputTxt.length()).replaceAll("\\D+", "");
                         int netSize = Integer.parseInt(size);
                         networkSize = netSize;
                         textPane.setText("Network size is set to " + networkSize + "\n");
                         System.out.println("Network size is set to " + networkSize );
-                    } else {
+                    }
+                    else if (inputTxt.contains("send data pkt to controller node="))
+                    {
+                    	System.out.println("Here!!");
+                    	textPane.setText("JARVIS ACTIVATED\n");
+                    	
+                    	String parameter = inputTxt.substring(inputTxt.indexOf("=") + 1);
+                    	System.out.println("Parameter received:"+ parameter);
+                    	textPane.setText("Parameter received:"+ parameter);
+                    	String openPathPacket = graph.getOpenPathString(parameter);
+//                    	System.out.println("Open Path:");
+//                    	System.out.println(openPathPacket);
+//                    	System.out.println(graph.graph.getEdge(parameter));
+                    	
+                    	LinkedList<String> neighbours = graph.graph.getNode(parameter).getAttribute("neighbors");
+                    	System.out.println("Printing neighbours");
+                    	ArrayList<String> n_list = new ArrayList<String>();
+                    	for (int i=0; i<neighbours.size(); i++) {
+                    	    String[] n = neighbours.get(i).split("\t");
+                    		n_list.add(n[0]);
+                    	}
+                    	
+                    	char[] configPacket = createConfigPacket(parameter, n_list);
+                    	System.out.println("Config Packet Created: ");
+                    	System.out.println(configPacket);
+                    	System.out.println("Sending packet to node: " + parameter);
+                    	sendToNode(configPacket);
+                    }
+                    else 
+                    {
                         char[] openPathPacket = graph.getOpenPath(textField.getText());
                         sendToNode(openPathPacket);
+//                        System.out.println(openPathPacket);
                     }
                 }
             }
